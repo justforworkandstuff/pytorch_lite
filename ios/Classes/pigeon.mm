@@ -230,12 +230,20 @@ taskQueue:taskQueue];
         codec:nullGetPigeonCodec()
 taskQueue:taskQueue];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(getRawImagePredictionListIndex:imageData:completion:)], @"ModelApi api (%@) doesn't respond to @selector(getRawImagePredictionListIndex:imageData:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(getRawImagePredictionListIndex:imageData:isTupleOutput:tupleIndex:completion:)], @"ModelApi api (%@) doesn't respond to @selector(getRawImagePredictionListIndex:imageData:isTupleOutput:tupleIndex:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray<id> *args = message;
         NSInteger arg_index = [GetNullableObjectAtIndex(args, 0) integerValue];
         FlutterStandardTypedData *arg_imageData = GetNullableObjectAtIndex(args, 1);
-        [api getRawImagePredictionListIndex:arg_index imageData:arg_imageData completion:^(NSArray<NSNumber *> *_Nullable output, FlutterError *_Nullable error) {
+        /* ----------------------------- ORIGINAL CODE ------------------------- */
+        // [api getRawImagePredictionListIndex:arg_index imageData:arg_imageData completion:^(NSArray<NSNumber *> *_Nullable output, FlutterError *_Nullable error) {
+        //   callback(wrapResult(output, error));
+        // }];
+        
+        /* ----------------------------- AGMO CUSTOM CODE ------------------------- */
+        NSNumber *arg_isTupleOutput = GetNullableObjectAtIndex(args, 2);
+        NSNumber *arg_tupleIndex = GetNullableObjectAtIndex(args, 3);
+        [api getRawImagePredictionListIndex:arg_index imageData:arg_imageData isTupleOutput:arg_isTupleOutput tupleIndex:arg_tupleIndex completion:^(NSArray<NSNumber *> *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
         }];
       }];
@@ -253,7 +261,7 @@ taskQueue:taskQueue];
         codec:nullGetPigeonCodec()
 taskQueue:taskQueue];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(getRawImagePredictionListObjectDetectionIndex:imageData:minimumScore:IOUThreshold:boxesLimit:completion:)], @"ModelApi api (%@) doesn't respond to @selector(getRawImagePredictionListObjectDetectionIndex:imageData:minimumScore:IOUThreshold:boxesLimit:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(getRawImagePredictionListObjectDetectionIndex:imageData:minimumScore:IOUThreshold:boxesLimit:isTupleOutput:tupleIndex:completion:)], @"ModelApi api (%@) doesn't respond to @selector(getRawImagePredictionListObjectDetectionIndex:imageData:minimumScore:IOUThreshold:boxesLimit:isTupleOutput:tupleIndex:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray<id> *args = message;
         NSInteger arg_index = [GetNullableObjectAtIndex(args, 0) integerValue];
@@ -261,7 +269,15 @@ taskQueue:taskQueue];
         double arg_minimumScore = [GetNullableObjectAtIndex(args, 2) doubleValue];
         double arg_IOUThreshold = [GetNullableObjectAtIndex(args, 3) doubleValue];
         NSInteger arg_boxesLimit = [GetNullableObjectAtIndex(args, 4) integerValue];
-        [api getRawImagePredictionListObjectDetectionIndex:arg_index imageData:arg_imageData minimumScore:arg_minimumScore IOUThreshold:arg_IOUThreshold boxesLimit:arg_boxesLimit completion:^(NSArray<ResultObjectDetection *> *_Nullable output, FlutterError *_Nullable error) {
+        /* ----------------------------- ORIGINAL CODE ------------------------- */
+        // [api getRawImagePredictionListObjectDetectionIndex:arg_index imageData:arg_imageData minimumScore:arg_minimumScore IOUThreshold:arg_IOUThreshold boxesLimit:arg_boxesLimit completion:^(NSArray<ResultObjectDetection *> *_Nullable output, FlutterError *_Nullable error) {
+        //   callback(wrapResult(output, error));
+        // }];
+
+        /* ----------------------------- AGMO CUSTOM CODE ------------------------- */
+        NSNumber *arg_isTupleOutput = GetNullableObjectAtIndex(args, 5);
+        NSNumber *arg_tupleIndex = GetNullableObjectAtIndex(args, 6);
+        [api getRawImagePredictionListObjectDetectionIndex:arg_index imageData:arg_imageData minimumScore:arg_minimumScore IOUThreshold:arg_IOUThreshold boxesLimit:arg_boxesLimit isTupleOutput:arg_isTupleOutput tupleIndex:arg_tupleIndex completion:^(NSArray<ResultObjectDetection *> *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
         }];
       }];
@@ -279,7 +295,7 @@ taskQueue:taskQueue];
         codec:nullGetPigeonCodec()
 taskQueue:taskQueue];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(getImagePredictionListIndex:imageData:imageBytesList:imageWidthForBytesList:imageHeightForBytesList:mean:std:completion:)], @"ModelApi api (%@) doesn't respond to @selector(getImagePredictionListIndex:imageData:imageBytesList:imageWidthForBytesList:imageHeightForBytesList:mean:std:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(getImagePredictionListIndex:imageData:imageBytesList:imageWidthForBytesList:imageHeightForBytesList:mean:std:isTupleOutput:tupleIndex:completion:)], @"ModelApi api (%@) doesn't respond to @selector(getImagePredictionListIndex:imageData:imageBytesList:imageWidthForBytesList:imageHeightForBytesList:mean:std:isTupleOutput:tupleIndex:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray<id> *args = message;
         NSInteger arg_index = [GetNullableObjectAtIndex(args, 0) integerValue];
@@ -289,7 +305,15 @@ taskQueue:taskQueue];
         NSNumber *arg_imageHeightForBytesList = GetNullableObjectAtIndex(args, 4);
         NSArray<NSNumber *> *arg_mean = GetNullableObjectAtIndex(args, 5);
         NSArray<NSNumber *> *arg_std = GetNullableObjectAtIndex(args, 6);
-        [api getImagePredictionListIndex:arg_index imageData:arg_imageData imageBytesList:arg_imageBytesList imageWidthForBytesList:arg_imageWidthForBytesList imageHeightForBytesList:arg_imageHeightForBytesList mean:arg_mean std:arg_std completion:^(NSArray<NSNumber *> *_Nullable output, FlutterError *_Nullable error) {
+        /* ----------------------------- ORIGINAL CODE ------------------------- */
+        // [api getImagePredictionListIndex:arg_index imageData:arg_imageData imageBytesList:arg_imageBytesList imageWidthForBytesList:arg_imageWidthForBytesList imageHeightForBytesList:arg_imageHeightForBytesList mean:arg_mean std:arg_std completion:^(NSArray<NSNumber *> *_Nullable output, FlutterError *_Nullable error) {
+        //   callback(wrapResult(output, error));
+        // }];
+
+        /* ----------------------------- AGMO CUSTOM CODE ------------------------- */
+        NSNumber *arg_isTupleOutput = GetNullableObjectAtIndex(args, 7);
+        NSNumber *arg_tupleIndex = GetNullableObjectAtIndex(args, 8);
+        [api getImagePredictionListIndex:arg_index imageData:arg_imageData imageBytesList:arg_imageBytesList imageWidthForBytesList:arg_imageWidthForBytesList imageHeightForBytesList:arg_imageHeightForBytesList mean:arg_mean std:arg_std isTupleOutput:arg_isTupleOutput tupleIndex:arg_tupleIndex completion:^(NSArray<NSNumber *> *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
         }];
       }];
@@ -307,7 +331,7 @@ taskQueue:taskQueue];
         codec:nullGetPigeonCodec()
 taskQueue:taskQueue];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(getImagePredictionListObjectDetectionIndex:imageData:imageBytesList:imageWidthForBytesList:imageHeightForBytesList:minimumScore:IOUThreshold:boxesLimit:completion:)], @"ModelApi api (%@) doesn't respond to @selector(getImagePredictionListObjectDetectionIndex:imageData:imageBytesList:imageWidthForBytesList:imageHeightForBytesList:minimumScore:IOUThreshold:boxesLimit:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(getImagePredictionListObjectDetectionIndex:imageData:imageBytesList:imageWidthForBytesList:imageHeightForBytesList:minimumScore:IOUThreshold:boxesLimit:isTupleOutput:tupleIndex:completion:)], @"ModelApi api (%@) doesn't respond to @selector(getImagePredictionListObjectDetectionIndex:imageData:imageBytesList:imageWidthForBytesList:imageHeightForBytesList:minimumScore:IOUThreshold:boxesLimit:isTupleOutput:tupleIndex:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray<id> *args = message;
         NSInteger arg_index = [GetNullableObjectAtIndex(args, 0) integerValue];
@@ -318,7 +342,15 @@ taskQueue:taskQueue];
         double arg_minimumScore = [GetNullableObjectAtIndex(args, 5) doubleValue];
         double arg_IOUThreshold = [GetNullableObjectAtIndex(args, 6) doubleValue];
         NSInteger arg_boxesLimit = [GetNullableObjectAtIndex(args, 7) integerValue];
-        [api getImagePredictionListObjectDetectionIndex:arg_index imageData:arg_imageData imageBytesList:arg_imageBytesList imageWidthForBytesList:arg_imageWidthForBytesList imageHeightForBytesList:arg_imageHeightForBytesList minimumScore:arg_minimumScore IOUThreshold:arg_IOUThreshold boxesLimit:arg_boxesLimit completion:^(NSArray<ResultObjectDetection *> *_Nullable output, FlutterError *_Nullable error) {
+        /* ----------------------------- ORIGINAL CODE ------------------------- */
+        // [api getImagePredictionListObjectDetectionIndex:arg_index imageData:arg_imageData imageBytesList:arg_imageBytesList imageWidthForBytesList:arg_imageWidthForBytesList imageHeightForBytesList:arg_imageHeightForBytesList minimumScore:arg_minimumScore IOUThreshold:arg_IOUThreshold boxesLimit:arg_boxesLimit completion:^(NSArray<ResultObjectDetection *> *_Nullable output, FlutterError *_Nullable error) {
+        //   callback(wrapResult(output, error));
+        // }];
+
+        /* ----------------------------- AGMO CUSTOM CODE ------------------------- */
+        NSNumber *arg_isTupleOutput = GetNullableObjectAtIndex(args, 8);
+        NSNumber *arg_tupleIndex = GetNullableObjectAtIndex(args, 9);
+        [api getImagePredictionListObjectDetectionIndex:arg_index imageData:arg_imageData imageBytesList:arg_imageBytesList imageWidthForBytesList:arg_imageWidthForBytesList imageHeightForBytesList:arg_imageHeightForBytesList minimumScore:arg_minimumScore IOUThreshold:arg_IOUThreshold boxesLimit:arg_boxesLimit isTupleOutput:arg_isTupleOutput tupleIndex:arg_tupleIndex completion:^(NSArray<ResultObjectDetection *> *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
         }];
       }];

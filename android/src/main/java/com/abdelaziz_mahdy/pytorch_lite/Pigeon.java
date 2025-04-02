@@ -453,13 +453,13 @@ public class Pigeon {
     /**predicts abstract number input */
     void getPredictionCustom(@NonNull Long index, @NonNull List<Double> input, @NonNull List<Long> shape, @NonNull String dtype, @NonNull NullableResult<List<Object>> result);
     /**predicts raw image but returns the raw net output */
-    void getRawImagePredictionList(@NonNull Long index, @NonNull byte[] imageData, @NonNull Result<List<Double>> result);
+    void getRawImagePredictionList(@NonNull Long index, @NonNull byte[] imageData, @NonNull Boolean isTupleOutput, @NonNull Long tupleIndex, @NonNull Result<List<Double>> result);
     /**predicts raw image but returns the raw net output */
-    void getRawImagePredictionListObjectDetection(@NonNull Long index, @NonNull byte[] imageData, @NonNull Double minimumScore, @NonNull Double IOUThreshold, @NonNull Long boxesLimit, @NonNull Result<List<ResultObjectDetection>> result);
+    void getRawImagePredictionListObjectDetection(@NonNull Long index, @NonNull byte[] imageData, @NonNull Double minimumScore, @NonNull Double IOUThreshold, @NonNull Long boxesLimit, @NonNull Boolean isTupleOutput, @NonNull Long tupleIndex, @NonNull Result<List<ResultObjectDetection>> result);
     /**predicts image but returns the raw net output */
-    void getImagePredictionList(@NonNull Long index, @Nullable byte[] imageData, @Nullable List<byte[]> imageBytesList, @Nullable Long imageWidthForBytesList, @Nullable Long imageHeightForBytesList, @NonNull List<Double> mean, @NonNull List<Double> std, @NonNull Result<List<Double>> result);
+    void getImagePredictionList(@NonNull Long index, @Nullable byte[] imageData, @Nullable List<byte[]> imageBytesList, @Nullable Long imageWidthForBytesList, @Nullable Long imageHeightForBytesList, @NonNull List<Double> mean, @NonNull List<Double> std, @NonNull Boolean isTupleOutput, @NonNull Long tupleIndex, @NonNull Result<List<Double>> result);
     /**predicts image but returns the output detections */
-    void getImagePredictionListObjectDetection(@NonNull Long index, @Nullable byte[] imageData, @Nullable List<byte[]> imageBytesList, @Nullable Long imageWidthForBytesList, @Nullable Long imageHeightForBytesList, @NonNull Double minimumScore, @NonNull Double IOUThreshold, @NonNull Long boxesLimit, @NonNull Result<List<ResultObjectDetection>> result);
+    void getImagePredictionListObjectDetection(@NonNull Long index, @Nullable byte[] imageData, @Nullable List<byte[]> imageBytesList, @Nullable Long imageWidthForBytesList, @Nullable Long imageHeightForBytesList, @NonNull Double minimumScore, @NonNull Double IOUThreshold, @NonNull Long boxesLimit, @NonNull Boolean isTupleOutput, @NonNull Long tupleIndex, @NonNull Result<List<ResultObjectDetection>> result);
 
     /** The codec used by ModelApi. */
     static @NonNull MessageCodec<Object> getCodec() {
@@ -550,6 +550,8 @@ public class Pigeon {
                 ArrayList<Object> args = (ArrayList<Object>) message;
                 Long indexArg = (Long) args.get(0);
                 byte[] imageDataArg = (byte[]) args.get(1);
+                Boolean isTupleOutputArg = (Boolean) args.get(2);
+                Long tupleIndexArg = (Long) args.get(3);
                 Result<List<Double>> resultCallback =
                     new Result<List<Double>>() {
                       public void success(List<Double> result) {
@@ -563,7 +565,7 @@ public class Pigeon {
                       }
                     };
 
-                api.getRawImagePredictionList(indexArg, imageDataArg, resultCallback);
+                api.getRawImagePredictionList(indexArg, imageDataArg, isTupleOutputArg, tupleIndexArg, resultCallback);
               });
         } else {
           channel.setMessageHandler(null);
@@ -584,6 +586,8 @@ public class Pigeon {
                 Double minimumScoreArg = (Double) args.get(2);
                 Double IOUThresholdArg = (Double) args.get(3);
                 Long boxesLimitArg = (Long) args.get(4);
+                Boolean isTupleOutputArg = (Boolean) args.get(5);
+                Long tupleIndexArg = (Long) args.get(6);
                 Result<List<ResultObjectDetection>> resultCallback =
                     new Result<List<ResultObjectDetection>>() {
                       public void success(List<ResultObjectDetection> result) {
@@ -597,7 +601,7 @@ public class Pigeon {
                       }
                     };
 
-                api.getRawImagePredictionListObjectDetection(indexArg, imageDataArg, minimumScoreArg, IOUThresholdArg, boxesLimitArg, resultCallback);
+                api.getRawImagePredictionListObjectDetection(indexArg, imageDataArg, minimumScoreArg, IOUThresholdArg, boxesLimitArg, isTupleOutputArg, tupleIndexArg,resultCallback);
               });
         } else {
           channel.setMessageHandler(null);
@@ -620,6 +624,8 @@ public class Pigeon {
                 Long imageHeightForBytesListArg = (Long) args.get(4);
                 List<Double> meanArg = (List<Double>) args.get(5);
                 List<Double> stdArg = (List<Double>) args.get(6);
+                Boolean isTupleOutputArg = (Boolean) args.get(7);
+                Long tupleIndexArg = (Long) args.get(8);
                 Result<List<Double>> resultCallback =
                     new Result<List<Double>>() {
                       public void success(List<Double> result) {
@@ -633,7 +639,7 @@ public class Pigeon {
                       }
                     };
 
-                api.getImagePredictionList(indexArg, imageDataArg, imageBytesListArg, imageWidthForBytesListArg, imageHeightForBytesListArg, meanArg, stdArg, resultCallback);
+                api.getImagePredictionList(indexArg, imageDataArg, imageBytesListArg, imageWidthForBytesListArg, imageHeightForBytesListArg, meanArg, stdArg, isTupleOutputArg, tupleIndexArg, resultCallback);
               });
         } else {
           channel.setMessageHandler(null);
@@ -657,6 +663,8 @@ public class Pigeon {
                 Double minimumScoreArg = (Double) args.get(5);
                 Double IOUThresholdArg = (Double) args.get(6);
                 Long boxesLimitArg = (Long) args.get(7);
+                Boolean isTupleOutputArg = (Boolean) args.get(8);
+                Long tupleIndexArg = (Long) args.get(9);
                 Result<List<ResultObjectDetection>> resultCallback =
                     new Result<List<ResultObjectDetection>>() {
                       public void success(List<ResultObjectDetection> result) {
@@ -670,7 +678,7 @@ public class Pigeon {
                       }
                     };
 
-                api.getImagePredictionListObjectDetection(indexArg, imageDataArg, imageBytesListArg, imageWidthForBytesListArg, imageHeightForBytesListArg, minimumScoreArg, IOUThresholdArg, boxesLimitArg, resultCallback);
+                api.getImagePredictionListObjectDetection(indexArg, imageDataArg, imageBytesListArg, imageWidthForBytesListArg, imageHeightForBytesListArg, minimumScoreArg, IOUThresholdArg, boxesLimitArg, isTupleOutputArg, tupleIndexArg, resultCallback);
               });
         } else {
           channel.setMessageHandler(null);

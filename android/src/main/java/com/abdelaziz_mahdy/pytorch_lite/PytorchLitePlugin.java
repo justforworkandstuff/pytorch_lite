@@ -136,7 +136,7 @@ result.error(e);
 
 
     @Override
-    public void getRawImagePredictionList(Long index, byte[] imageData, Pigeon.Result<List<Double>> result) {
+    public void getRawImagePredictionList(Long index, byte[] imageData, Boolean isTupleOutput, Long tupleIndex, Pigeon.Result<List<Double>> result) {
 
         PrePostProcessor prePostProcessor = null;
         Module imageModule = null;
@@ -157,21 +157,82 @@ result.error(e);
 
             floatBuffer.put(tempFloatBuffer);
             floatBuffer.flip();  // Reset the buffer's position to 0
-
+            
             final Tensor imageInputTensor =   Tensor.fromBlob(floatBuffer, new long[] {1, 3, prePostProcessor.mImageHeight, prePostProcessor.mImageWidth}, MemoryFormat.CONTIGUOUS);
 
-
-            final Tensor imageOutputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTensor();
+            /* ----------------------------- ORIGINAL CODE ------------------------- */
+            // final Tensor imageOutputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTensor();
 
             // getting tensor content as java array of doubles
-            float[] scores = imageOutputTensor.getDataAsFloatArray();
+            // float[] scores = imageOutputTensor.getDataAsFloatArray();
 
-            Double[] scoresDouble = new Double[scores.length];
-            for (int i = 0; i < scoresDouble.length; i++) {
+            // Double[] scoresDouble = new Double[scores.length];
+            // for (int i = 0; i < scoresDouble.length; i++) {
 
-                scoresDouble[i] = Double.valueOf(Float.valueOf(scores[i]));
+            //     scoresDouble[i] = Double.valueOf(Float.valueOf(scores[i]));
+            // }
+            // result.success(Arrays.asList(scoresDouble));
+
+            /* ----------------------------- AGMO CUSTOM CODE ------------------------- */
+            Tensor imageOutputTensor = null;
+            if (isTupleOutput) {
+                imageOutputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTuple()[tupleIndex.intValue()].toTensor();
+            } else {
+                imageOutputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTensor();
             }
-            result.success(Arrays.asList(scoresDouble));
+
+            double[] doubleArray = null;
+            switch (imageOutputTensor.dtype()) {
+                case UINT8: {
+                    byte[] byteArray = imageOutputTensor.getDataAsUnsignedByteArray();
+                    doubleArray = new double[byteArray.length];
+                    for (int i = 0; i < byteArray.length; i++) {
+                        doubleArray[i] = (double) byteArray[i];
+                    }
+                }
+                break;
+                case INT8: {
+                    byte[] byteArray = imageOutputTensor.getDataAsByteArray();
+                    doubleArray = new double[byteArray.length];
+                    for (int i = 0; i < byteArray.length; i++) {
+                        doubleArray[i] = (double) byteArray[i];
+                    }
+                }
+                break;
+                case INT32: {
+                    int[] intArray = imageOutputTensor.getDataAsIntArray();
+                    doubleArray = new double[intArray.length];
+                    for (int i = 0; i < intArray.length; i++) {
+                        doubleArray[i] = (double) intArray[i];
+                    }
+                }
+                break;
+                case FLOAT32: {
+                    float[] floatArray = imageOutputTensor.getDataAsFloatArray();
+                    doubleArray = new double[floatArray.length];
+                    for (int i = 0; i < floatArray.length; i++) {
+                        doubleArray[i] = Double.valueOf(Float.valueOf(floatArray[i]));
+                    }
+                }
+                break;
+                case INT64: {
+                    long[] longArray = imageOutputTensor.getDataAsLongArray();
+                    doubleArray = new double[longArray.length];
+                    for (int i = 0; i < longArray.length; i++) {
+                        doubleArray[i] = (double) longArray[i];
+                    }
+                }
+                break;
+                case FLOAT64: {
+                    doubleArray = imageOutputTensor.getDataAsDoubleArray();
+                }
+                break;
+            }
+            List<Double> doubleList = new ArrayList<>();
+            for (double d : doubleArray) {
+                doubleList.add(d);
+            }
+            result.success(doubleList);
         } catch (Exception e) {
             Log.e(TAG, "error classifying image", e);
             result.error(e);
@@ -180,7 +241,7 @@ result.error(e);
     }
 
     @Override
-    public void getRawImagePredictionListObjectDetection(Long index, byte[] imageData, Double minimumScore, Double IOUThreshold, Long boxesLimit, Pigeon.Result<List<Pigeon.ResultObjectDetection>> result) {
+    public void getRawImagePredictionListObjectDetection(Long index, byte[] imageData, Double minimumScore, Double IOUThreshold, Long boxesLimit, Boolean isTupleOutput, Long tupleIndex, Pigeon.Result<List<Pigeon.ResultObjectDetection>> result) {
         Module imageModule = null;
         PrePostProcessor prePostProcessor = null;
         try {
@@ -207,14 +268,22 @@ result.error(e);
             floatBuffer.put(tempFloatBuffer);
             floatBuffer.flip();  // Reset the buffer's position to 0
 
-            final Tensor imageInputTensor =   Tensor.fromBlob(floatBuffer, new long[] {1, 3, prePostProcessor.mImageHeight, prePostProcessor.mImageWidth}, MemoryFormat.CONTIGUOUS);
+            final Tensor imageInputTensor = Tensor.fromBlob(floatBuffer, new long[] {1, 3, prePostProcessor.mImageHeight, prePostProcessor.mImageWidth}, MemoryFormat.CONTIGUOUS);
 
             Tensor outputTensor = null;
             if (prePostProcessor.mObjectDetectionModelType == 0) {
                 IValue[] outputTuple = imageModule.forward(IValue.from(imageInputTensor)).toTuple();
                 outputTensor = outputTuple[0].toTensor();
             } else {
-                outputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTensor();
+                /* ----------------------------- ORIGINAL CODE ------------------------- */
+                // outputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTensor();
+
+                /* ----------------------------- AGMO CUSTOM CODE ------------------------- */
+                if (isTupleOutput) {
+                    outputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTuple()[tupleIndex.intValue()].toTensor();
+                } else {
+                    outputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTensor();
+                }
             }
 
             final float[] outputs = outputTensor.getDataAsFloatArray();
@@ -231,7 +300,7 @@ result.error(e);
 
     @Override
     public void getImagePredictionList(Long index, byte[] imageData, List<byte[]> imageBytesList,
-            Long imageWidthForBytesList, Long imageHeightForBytesList, List<Double> mean, List<Double> std,
+            Long imageWidthForBytesList, Long imageHeightForBytesList, List<Double> mean, List<Double> std, Boolean isTupleOutput, Long tupleIndex,
             Pigeon.Result<List<Double>> result) {
         Module imageModule = null;
         Bitmap bitmap = null;
@@ -248,7 +317,7 @@ result.error(e);
             } else {
                 bitmap = getBitmapFromBytesList(imageBytesList, imageWidthForBytesList.intValue(),
                         imageHeightForBytesList.intValue());
-                            Matrix matrix = new Matrix();
+                Matrix matrix = new Matrix();
                 matrix.postRotate(90.0f);
                 bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
             }
@@ -272,8 +341,17 @@ result.error(e);
 
         try {
             final Tensor imageInputTensor = TensorImageUtils.bitmapToFloat32Tensor(bitmap, meanFormatted, stdFormatted);
+            
+            /* ----------------------------- ORIGINAL CODE ------------------------- */
+            // final Tensor imageOutputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTensor();
 
-            final Tensor imageOutputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTensor();
+            /* ----------------------------- AGMO CUSTOM CODE ------------------------- */
+            Tensor imageOutputTensor = null;
+            if (isTupleOutput) {
+                imageOutputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTuple()[tupleIndex.intValue()].toTensor();
+            } else {
+                imageOutputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTensor();
+            }
 
             // getting tensor content as java array of doubles
             float[] scores = imageOutputTensor.getDataAsFloatArray();
@@ -294,7 +372,7 @@ result.error(e);
     @Override
     public void getImagePredictionListObjectDetection(Long index, byte[] imageData, List<byte[]> imageBytesList,
             Long imageWidthForBytesList, Long imageHeightForBytesList, Double minimumScore, Double IOUThreshold,
-            Long boxesLimit, Pigeon.Result<List<Pigeon.ResultObjectDetection>> result) {
+            Long boxesLimit, Boolean isTupleOutput, Long tupleIndex, Pigeon.Result<List<Pigeon.ResultObjectDetection>> result) {
         Module imageModule = null;
         PrePostProcessor prePostProcessor = null;
         Bitmap bitmap = null;
@@ -335,7 +413,15 @@ result.error(e);
                 IValue[] outputTuple = imageModule.forward(IValue.from(imageInputTensor)).toTuple();
                 outputTensor = outputTuple[0].toTensor();
             } else {
-                outputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTensor();
+                /* ----------------------------- ORIGINAL CODE ------------------------- */
+                // outputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTensor();
+
+                /* ----------------------------- AGMO CUSTOM CODE ------------------------- */
+                if (isTupleOutput) {
+                    outputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTuple()[tupleIndex.intValue()].toTensor();
+                } else {
+                    outputTensor = imageModule.forward(IValue.from(imageInputTensor)).toTensor();
+                }
             }
 
             final float[] outputs = outputTensor.getDataAsFloatArray();

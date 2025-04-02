@@ -2,6 +2,16 @@
 
 - flutter package to help run pytorch lite models classification and YoloV5 and YoloV8.
 
+## MODIFIED FILES FOR AGMO CUSTOM CODE:
+- android/src/main/java/com/abdelaziz_mahdy/pytorch_lite/PytorchLitePlugin.java
+- android/src/main/java/com/abdelaziz_mahdy/pytorch_lite/Pigeon.java
+- ios/Classes/PytorchLitePlugin.mm
+- ios/Classes/pigeon.h
+- ios/Classes/pigeon.mm
+- lib/pigeon.dart
+- lib/pytorch_lite.dart
+- pigeons/messages.dart
+
 # example for Classification
 
 ![image](https://user-images.githubusercontent.com/25157308/165343107-85bc8d7f-3db2-425e-bcbc-6a4c18c77947.png)

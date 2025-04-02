@@ -7,6 +7,7 @@ import 'dart:typed_data' show Float64List, Int32List, Int64List, Uint8List;
 
 import 'package:flutter/foundation.dart' show ReadBuffer, WriteBuffer;
 import 'package:flutter/services.dart';
+import 'package:collection/collection.dart';
 
 PlatformException _createConnectionError(String channelName) {
   return PlatformException(
@@ -193,7 +194,7 @@ class ModelApi {
   }
 
   ///predicts raw image but returns the raw net output
-  Future<List<double>> getRawImagePredictionList(int index, Uint8List imageData) async {
+  Future<List<double>> getRawImagePredictionList(int index, Uint8List imageData, bool isTupleOutput, int tupleIndex) async {
     final String pigeonVar_channelName = 'dev.flutter.pigeon.pytorch_lite.ModelApi.getRawImagePredictionList$pigeonVar_messageChannelSuffix';
     final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
@@ -201,7 +202,7 @@ class ModelApi {
       binaryMessenger: pigeonVar_binaryMessenger,
     );
     final List<Object?>? pigeonVar_replyList =
-        await pigeonVar_channel.send(<Object?>[index, imageData]) as List<Object?>?;
+        await pigeonVar_channel.send(<Object?>[index, imageData, isTupleOutput, tupleIndex]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -216,12 +217,23 @@ class ModelApi {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (pigeonVar_replyList[0] as List<Object?>?)!.cast<double>();
+      final raw = pigeonVar_replyList[0] as List<Object?>?;
+      if (raw == null) {
+        throw PlatformException(
+          code: 'null-error',
+          message: 'Host platform returned null value for non-null return value.',
+        );
+      }
+
+      return raw
+        .whereType<num>()
+        .map((e) => e.toDouble())
+        .toList();
     }
   }
 
   ///predicts raw image but returns the raw net output
-  Future<List<ResultObjectDetection>> getRawImagePredictionListObjectDetection(int index, Uint8List imageData, double minimumScore, double IOUThreshold, int boxesLimit) async {
+  Future<List<ResultObjectDetection>> getRawImagePredictionListObjectDetection(int index, Uint8List imageData, double minimumScore, double IOUThreshold, int boxesLimit, bool isTupleOutput, int tupleIndex) async {
     final String pigeonVar_channelName = 'dev.flutter.pigeon.pytorch_lite.ModelApi.getRawImagePredictionListObjectDetection$pigeonVar_messageChannelSuffix';
     final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
@@ -229,7 +241,7 @@ class ModelApi {
       binaryMessenger: pigeonVar_binaryMessenger,
     );
     final List<Object?>? pigeonVar_replyList =
-        await pigeonVar_channel.send(<Object?>[index, imageData, minimumScore, IOUThreshold, boxesLimit]) as List<Object?>?;
+        await pigeonVar_channel.send(<Object?>[index, imageData, minimumScore, IOUThreshold, boxesLimit, isTupleOutput, tupleIndex]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -249,7 +261,7 @@ class ModelApi {
   }
 
   ///predicts image but returns the raw net output
-  Future<List<double>> getImagePredictionList(int index, Uint8List? imageData, List<Uint8List>? imageBytesList, int? imageWidthForBytesList, int? imageHeightForBytesList, List<double> mean, List<double> std) async {
+  Future<List<double>> getImagePredictionList(int index, Uint8List? imageData, List<Uint8List>? imageBytesList, int? imageWidthForBytesList, int? imageHeightForBytesList, List<double> mean, List<double> std, bool isTupleOutput, int tupleIndex) async {
     final String pigeonVar_channelName = 'dev.flutter.pigeon.pytorch_lite.ModelApi.getImagePredictionList$pigeonVar_messageChannelSuffix';
     final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
@@ -257,7 +269,7 @@ class ModelApi {
       binaryMessenger: pigeonVar_binaryMessenger,
     );
     final List<Object?>? pigeonVar_replyList =
-        await pigeonVar_channel.send(<Object?>[index, imageData, imageBytesList, imageWidthForBytesList, imageHeightForBytesList, mean, std]) as List<Object?>?;
+        await pigeonVar_channel.send(<Object?>[index, imageData, imageBytesList, imageWidthForBytesList, imageHeightForBytesList, mean, std, isTupleOutput, tupleIndex]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -277,7 +289,7 @@ class ModelApi {
   }
 
   ///predicts image but returns the output detections
-  Future<List<ResultObjectDetection>> getImagePredictionListObjectDetection(int index, Uint8List? imageData, List<Uint8List>? imageBytesList, int? imageWidthForBytesList, int? imageHeightForBytesList, double minimumScore, double IOUThreshold, int boxesLimit) async {
+  Future<List<ResultObjectDetection>> getImagePredictionListObjectDetection(int index, Uint8List? imageData, List<Uint8List>? imageBytesList, int? imageWidthForBytesList, int? imageHeightForBytesList, double minimumScore, double IOUThreshold, int boxesLimit, bool isTupleOutput, int tupleIndex) async {
     final String pigeonVar_channelName = 'dev.flutter.pigeon.pytorch_lite.ModelApi.getImagePredictionListObjectDetection$pigeonVar_messageChannelSuffix';
     final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
@@ -285,7 +297,7 @@ class ModelApi {
       binaryMessenger: pigeonVar_binaryMessenger,
     );
     final List<Object?>? pigeonVar_replyList =
-        await pigeonVar_channel.send(<Object?>[index, imageData, imageBytesList, imageWidthForBytesList, imageHeightForBytesList, minimumScore, IOUThreshold, boxesLimit]) as List<Object?>?;
+        await pigeonVar_channel.send(<Object?>[index, imageData, imageBytesList, imageWidthForBytesList, imageHeightForBytesList, minimumScore, IOUThreshold, boxesLimit, isTupleOutput, tupleIndex]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
